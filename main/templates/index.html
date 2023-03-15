@@ -1,0 +1,359 @@
+{% extends 'base.html' %}
+
+{% load widget_tweaks %}
+
+{% block content %}
+<style>
+    .messages {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: 50%;
+
+        transform: translate(-50%, -50%);
+
+
+    }
+
+    #info {
+
+        background-color: rgb(145, 247, 145);
+        padding: 1rem;
+        border-radius: 5px;
+        transition: all 0.5s ease-in-out;
+
+    }
+
+    #success {
+
+        background-color: rgb(145, 247, 145);
+        padding: 1rem;
+        border-radius: 5px;
+        transition: all 0.5s ease-in-out;
+
+    }
+
+        #error {
+
+        background-color: rgb(249, 90, 90);
+        padding: 1rem;
+        border-radius: 5px;
+        transition: all 0.5s ease-in-out;
+
+    }
+
+    .side-nav-wrapper {
+        display: flex;
+        flex-direction: column;
+
+
+    }
+
+    .link-holder {
+        margin-top: 0.7rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    a {
+        color: black;
+    }
+
+    .side-links {
+        margin-bottom: 0.4rem;
+    }
+
+    .user-name {
+        text-transform: capitalize;
+        font-weight: 600;
+        margin-left: 0.8rem;
+    }
+
+    #input {
+        display: none;
+    }
+
+    input[type=file] {
+        width: 94px;
+        color: transparent;
+    }
+
+    .side-links {
+        margin-bottom: 1rem;
+    }
+
+    .second-col-flex {
+        display: flex;
+    }
+
+    .rsz {
+        resize: both;
+        overflow: scroll;
+    }
+
+    .frame {
+        width: 100%;
+        height: auto;
+    }
+
+    .vid {
+        width: 100%;
+        height: 100%;
+    }
+
+    #new_input {
+        display: none;
+    }
+
+    .image-max-cover {
+        width: 100%;
+        overflow: hidden;
+
+    }
+
+    .image-container {
+        height: 50px;
+    }
+
+    .grid-parent {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: 1fr;
+        grid-column-gap: 0px;
+        grid-row-gap: 0px;
+        margin-top: 5rem;
+
+    }
+
+    .card-folders .card-body>.breadcrumb {
+        margin-left: -1.25em;
+        margin-right: -1.25em;
+        margin-top: -1.25em;
+        border-radius: 0;
+    }
+
+    .folder-container {
+        text-align: center;
+        margin-left: 1rem;
+        margin-right: 1rem;
+        margin-bottom: 1.5rem;
+        width: 100px;
+        padding: 0;
+        align-self: start;
+        background: none;
+        border: none;
+        outline-color: transparent !important;
+        cursor: pointer;
+    }
+
+    .folder-icon {
+        font-size: 3em;
+        line-height: 1.25em;
+    }
+
+    .folder-icon-color {
+        color: #FFC107;
+        text-shadow: 1px 1px 0px #e0a800;
+    }
+
+    .folder-name {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        hyphens: auto;
+    }
+
+    .flex-column .folder-container {
+        display: flex;
+        width: auto;
+        min-width: 100px;
+        text-align: left;
+        margin: 0;
+        margin-bottom: 1rem;
+    }
+
+    .flex-column .folder-icon,
+    .flex-column .folder-name {
+        display: inline-flex;
+    }
+
+    .flex-column .folder-icon {
+        font-size: 1.4em;
+        margin-right: 1rem;
+    }
+
+    .file-icon-color {
+        color: #999;
+    }
+</style>
+{% if messages %}
+{% if form.non_field_errors %}
+<div class="form-group text-error">
+    {{ form.non_field_errors }}
+</div>
+{% endif %}
+
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} id="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+</ul>
+{% endif %}
+<div class="fixed-navbar">
+
+    <nav>
+        <div class="nav-wrapper" style="margin-left: 50px; margin-right: 50px;">
+
+            <a href="#" class="brand-logo">
+                TwoDrive
+            </a>
+         
+        </div>
+    </nav>
+</div>
+
+
+<div class="row">
+
+    <div class="col s12 m4 l3">
+        <div class="side-nav-wrapper">
+            <h6 class="user-name">
+
+                {% if user.is_authenticated %}
+                {{ user.get_username }}
+                {% endif %}
+
+            </h6>
+            <div class="link-holder">
+
+                <a href="{% url 'homepage' %}" class="side-links" style="display: flex; align-items: center; flex-direction: row;">
+                    <span class="material-symbols-outlined" style="margin-right: 0.5rem; font-weight: 200; ">
+                        folder
+                    </span> Photos</a>
+                <a href="{% url 'videos' %}" class="side-links" style="display: flex; align-items: center; flex-direction: row;"> <span
+                        class="material-symbols-outlined" style="margin-right: 0.5rem; font-weight: 200;">
+                        history
+                    </span> Recent</a>
+                <a href="http://127.0.0.1:8000/accounts/logout/" class="side-links" style="display: flex; align-items: center; flex-direction: row;"> <span
+                        class="material-symbols-outlined" style="margin-right: 0.5rem; font-weight: 200;">
+                    </span> Logout</a>
+     
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+    <div class="col s12 m8 l9"> <!-- Note that "m8 l9" was added -->
+        <div>
+            <div class="second-col-flex">
+
+                <form method='POST' enctype="multipart/form-data"
+                    style="display: flex; flex-direction: row; align-items: center; " id="select">
+
+                    <a onclick="document.getElementById('input').click()" style="width: auto;"
+                        class="waves-effect waves-light btn-small red lighten-3"><i
+                            class="material-icons right">add_a_photo
+                        </i>Upload A photo</a>
+                
+
+
+                    {% csrf_token %}
+
+
+                    {{ form.video|attr:"id:new_input" }}
+                </form>
+            </div>
+        </div>
+        <div class="grid-parent">
+            {% for Media in media %}
+            {% if Media.image %}
+            <div class="d-inline-flex">
+                <a href="#modal" class="modal-trigger">
+                    <button class="folder-container" data-target="modal1" onclick="retriveImage(this);"
+                        data-image="{{ Media.image.url }}">
+                        <div class="folder-icon">
+                            <i class="fa fa-folder folder-icon-color"></i>
+                        </div>
+                        <div class="folder-name">{{ Media.image.name }}</div>
+                        <div style="display: flex; justify-content: space-between;">
+
+                        <a href="{% url 'delete' Media.pk %}"><span class="material-symbols-outlined">
+                            delete
+                        </span></a>
+                        <a href="{% url 'update' Media.pk %}"><span class="material-symbols-outlined">
+                            edit
+                        </span></a>
+                     </div>
+
+                    </button>
+                </a>
+            </div>
+
+
+
+            {% endif %}
+
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+<div id="modal" class="modal modal-fixed-footer">
+    <img style="width: 100%; height: 100%;" id="img" src="" alt="">
+</div>
+
+<script>
+    var instance = M.Modal.getInstance('open');
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems);
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.fixed-action-btn');
+        var instances = M.FloatingActionButton.init(elems, {
+            direction: 'right',
+            hoverEnabled: false
+        });
+    });
+
+    var instance = M.FloatingActionButton.getInstance('open');
+
+    $('#select').on('change', function () {
+        $(this).closest('form').submit();
+    });
+
+    function hide_message() {
+        document.getElementById("info").style.display = "none"
+    }
+    function hide_success() {
+        document.getElementById("success").style.display = "none"
+    }
+    function error() {
+        document.getElementById("error").style.display = "none"
+    }
+    setTimeout(hide_message, 3000)
+    setTimeout(hide_success, 3000)
+    setTimeout(error, 3000)
+    function retriveImage(data) {
+        image = data.getAttribute("data-image")
+        console.log(image)
+
+        document.getElementById("img").src = image
+
+
+    }
+
+</script>
+{% endblock content %}
